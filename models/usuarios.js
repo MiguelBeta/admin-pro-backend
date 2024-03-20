@@ -32,8 +32,9 @@ const UsuarioSchema = Schema({
 
 
 // Cambiar la forma en que se muestra el _id por uid
+// Desestructura el objeto y excluye los campo __v, password
 UsuarioSchema.method('toJSON', function(){
-  const { __v, _id, ...object } = this.toObject();
+  const { __v, _id, password, ...object } = this.toObject();
   object.uid = _id;
   return object;
 })
