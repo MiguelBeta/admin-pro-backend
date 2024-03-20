@@ -7,9 +7,9 @@
 //Importaciones de modulos
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { validarCampos } = require('../middlewares/validator-capos')
+const { validarCampos } = require('../middlewares/validator-campos')
 
-const { getUsuarios, crearUsuario, actualizarUsuarios } = require('../controllers/usuarios')
+const { getUsuarios, crearUsuario, actualizarUsuarios, borrarUsuario } = require('../controllers/usuarios')
 const router = Router();
 
 // Lee la info del usuario
@@ -33,9 +33,14 @@ router.put('/:id',
     check('nombre', "El nombre es obligatorio").not().isEmpty(),
     check('password', "El password es obligatorio").not().isEmpty(),
     check('role', "El rol es obligatorio").isEmail(),
+    // Se llama despues de que los campos tengan la informacion para validarla
+    validarCampos
   ],
   actualizarUsuarios
 );
+
+// Eliminar usuario
+router.delete('/:id', borrarUsuario );
 
 
 module.exports = router;

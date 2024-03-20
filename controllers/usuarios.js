@@ -2,6 +2,7 @@ const { response } = require('express');
 const bcrypt = require('bcryptjs');
 
 const Usuario = require('../models/usuarios');
+const { generateJWT } = require('../helpers/jwt');
 
 
 const getUsuarios = async (req, res) => {
@@ -29,7 +30,7 @@ const crearUsuario = async (req, res = response) => {
     // finOne = busca y devuelve un solo valor que cumple los criterios de consulta (no repetido)
     const existeEmail = await Usuario.findOne({ email });
 
-    if ( existeEmail ){
+    if (existeEmail) {
       return res.status(400).json({
         ok: false,
         msg: 'El correo ya esta registrado'
@@ -42,17 +43,21 @@ const crearUsuario = async (req, res = response) => {
     // Encripta contraseña antes de guardar
     // Genera el password con datos aleatorios
     const salt = bcrypt.genSaltSync();
-    usuario.password = bcrypt.hashSync( password, salt );
+    usuario.password = bcrypt.hashSync(password, salt);
 
 
     // Guarda en la BD
     await usuario.save();
 
+    // Generar el JWK ( Token )
+    const token = await generateJWT( usuario.id );
+
   } catch (error) {
 
     res.json({
       ok: true,
-      usuario
+      usuario,
+      token
     });
 
   }
@@ -60,7 +65,7 @@ const crearUsuario = async (req, res = response) => {
 
 }
 
-const actualizarUsuarios = async ( req, res = response ) => {
+const actualizarUsuarios = async (req, res = response) => {
 
   // TODO: validar token y comprobar si es el usuario correcto
 
@@ -68,9 +73,9 @@ const actualizarUsuarios = async ( req, res = response ) => {
 
   try {
 
-    const usuarioDB = await Usuario.findById( uid );
+    const usuarioDB = await Usuario.findById(uid);
 
-    if ( !usuarioDB ){
+    if (!usuarioDB) {
       return res.status(404).json({
         ok: false,
         msg: 'No existe un usario por ese id'
@@ -80,33 +85,66 @@ const actualizarUsuarios = async ( req, res = response ) => {
     // Actualizaciones elimina estos campos que no puede actualizar en la petición
     const { password, google, email, ...campos } = req.body;
 
-    if ( usuarioDB.email !== email ) {
+    if (usuarioDB.email !== email) {
       const existeEmail = await Usuario.findOne({ email });
-      if( existeEmail ){
-          return res.status(400).json({
-            ok: false,
-            msg: 'Ya existe un usuario con ese email'
-          });
+      if (existeEmail) {
+        return res.status(400).json({
+          ok: false,
+          msg: 'Ya existe un usuario con ese email'
+        });
       }
     }
 
     campos.email = email;
     // Actualiza por uid y se envian los campos que puede actualizar
-    const usuarioActualizado = await Usuario.findByIdAndUpdate( uid, campos, { new: true } );
+    const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
 
 
     res.json({
       ok: true,
       usuario: usuarioActualizado
-    })
+    });
 
 
   } catch (error) {
     console.log(error);
     res.status(500).json({
       ok: false,
-      msg:'Error inesperado'
+      msg: 'Error inesperado'
     })
+  }
+
+}
+
+const borrarUsuario = async (req, res = response) => {
+
+  const uid = req.params.id;
+
+  try {
+
+    const usuarioDB = await Usuario.findById(uid);
+
+    if (!usuarioDB) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'No existe un usario por ese id'
+      });
+    }
+
+    await Usuario.findByIdAndDelete(uid);
+
+    res.json({
+      ok: true,
+      msg: 'Usuario eliminado'
+    })
+
+  } catch (error) {
+
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Hable con el administrador'
+    });
   }
 
 }
@@ -114,5 +152,6 @@ const actualizarUsuarios = async ( req, res = response ) => {
 module.exports = {
   getUsuarios,
   crearUsuario,
-  actualizarUsuarios
+  actualizarUsuarios,
+  borrarUsuario
 }
