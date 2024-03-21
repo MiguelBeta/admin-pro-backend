@@ -8,7 +8,7 @@ const { generateJWT } = require('../helpers/jwt');
 const getUsuarios = async (req, res) => {
 
   // Llama la informacion de todos los usuarios
-  const usuarios = await Usuario.find({}, 'nombre email role google');
+  const usuarios = await Usuario.find( {}, 'nombre email role google' );
 
   res.json({
     ok: true,
