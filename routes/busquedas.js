@@ -1,6 +1,6 @@
 /*
 
-  Ruta: /api/todo/:busqueda
+  Ruta: /api/todo/
 
  */
 
@@ -10,13 +10,16 @@ const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validator-campos')
 
 const { validarJWT } = require('../middlewares/validar-jwt');
-const { getTodo } = require('../controllers/busquedas');
+const { getTodo, getDocumentosColeccion } = require('../controllers/busquedas');
 
 
 const router = Router();
 
 // Lee la info del usuario
-router.get( '/:busqueda', validarJWT ,getTodo );
+router.get( '/:busqueda', validarJWT , getTodo );
+
+router.get( '/coleccion/:tabla/:busqueda', validarJWT, getDocumentosColeccion );
+
 
 
 
