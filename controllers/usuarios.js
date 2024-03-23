@@ -7,13 +7,34 @@ const { generateJWT } = require('../helpers/jwt');
 
 const getUsuarios = async (req, res) => {
 
-  // Llama la informacion de todos los usuarios
-  const usuarios = await Usuario.find( {}, 'nombre email role google' );
+  const desde = Number(req.query.desde) || 0;
 
-  res.json({
-    ok: true,
-    usuarios
-  });
+  // Llama la informacion de todos los usuarios
+  // const usuarios = await Usuario
+  //   .find({}, 'nombre email role google')
+  //   .skip(desde)
+  //   .limit(5);
+
+  // // Total de usuarios
+  // const total = await Usuario.countDocuments();
+
+  // Para qu usuarios y total trabajen en simultaneo
+  const [ usuarios, total ] = await Promise.all([
+      Usuario
+          .find({}, 'nombre email role google')
+          .skip(desde)
+          .limit(5),
+
+      Usuario.countDocuments()
+
+  ]);
+
+
+res.json({
+  ok: true,
+  usuarios,
+  total
+});
 
 }
 
@@ -50,7 +71,7 @@ const crearUsuario = async (req, res = response) => {
     await usuario.save();
 
     // Generar el JWK ( Token )
-    const token = await generateJWT( usuario.id );
+    const token = await generateJWT(usuario.id);
 
   } catch (error) {
 
