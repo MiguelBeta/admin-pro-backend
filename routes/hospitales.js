@@ -30,12 +30,17 @@ router.post('/',
 
 // Actualizar información
 router.put('/:id',
-  [ ],
+  [
+    validarJWT,
+    check('nombre', 'El nombre del hospital es necesario').not().isEmpty(),
+    validarCampos
+  ],
   actualizarHospital
 );
 
 // Eliminar usuario
 router.delete('/:id',
+    validarJWT,
     borrarHospital
   );
 

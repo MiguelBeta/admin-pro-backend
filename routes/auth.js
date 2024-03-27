@@ -6,9 +6,10 @@
 
 // Importaciones
 const { Router } = require('express');
-const { login, googleSignIn } = require('../controllers/auth');
+const { login, googleSignIn, renewToken } = require('../controllers/auth');
 const { check } = require('express-validator');
-const { validarCampos } = require('../middlewares/validator-campos.js')
+const { validarCampos } = require('../middlewares/validator-campos.js');
+const { validarJWT } = require('../middlewares/validar-jwt.js');
 
 const router = Router();
 
@@ -30,6 +31,11 @@ router.post( '/google',
     ],
     googleSignIn
 );
+
+router.get( '/renew',
+    validarJWT,
+    renewToken
+  );
 
 
 
