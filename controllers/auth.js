@@ -80,7 +80,7 @@ const googleSignIn = async (req, res = response) => {
 
     res.json({
       ok: true,
-      email, name, picture,
+      // email, name, picture,
       token
     });
 
