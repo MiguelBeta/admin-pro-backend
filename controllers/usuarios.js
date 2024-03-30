@@ -59,6 +59,7 @@ const crearUsuario = async (req, res = response) => {
     }
 
     // Asigna los valores requeridos al usuario
+    //const usuario = new Usuario(req.body);
     const usuario = new Usuario(req.body);
 
     // Encripta contraseña antes de guardar
@@ -70,10 +71,8 @@ const crearUsuario = async (req, res = response) => {
     // Guarda en la BD
     await usuario.save();
 
-    // Generar el JWK ( Token )
+    // Generar el JWT ( Token )
     const token = await generateJWT(usuario.id);
-
-  } catch (error) {
 
     res.json({
       ok: true,
@@ -81,8 +80,14 @@ const crearUsuario = async (req, res = response) => {
       token
     });
 
-  }
 
+  } catch (error) {
+    console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado... revisar logs'
+        });
+    }
 
 }
 
