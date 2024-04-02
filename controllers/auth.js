@@ -1,8 +1,11 @@
 // Importaciones
 const { response } = require('express');
-const Usuario = require('../models/usuarios');
 const bcrypt = require('bcryptjs');
+
+const Usuario = require('../models/usuarios');
 const { generateJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
+
 
 
 
@@ -51,8 +54,10 @@ const login = async (req, res = response) => {
 
 const googleSignIn = async (req, res = response) => {
 
+  const googleToken = req.body.token;
+
   try {
-    const { email, name, picture } = await googleVerify(req.body.token);
+    const { email, name, picture } = await googleVerify( googleToken );
 
     const usuarioDB = await Usuario.findOne({ email });
     let usuario;
@@ -75,7 +80,7 @@ const googleSignIn = async (req, res = response) => {
     await usuario.save();
 
     // Generar el TOKEN - JWT
-    const token = await generateJWT(usuario.id);
+    const token = await generateJWT( usuario.id );
 
 
     res.json({
@@ -86,7 +91,7 @@ const googleSignIn = async (req, res = response) => {
 
   } catch (error) {
     console.log(error);
-    res.status(400).json({
+    res.status(401).json({
       ok: false,
       msg: 'Token de Google no es correcto'
     });
