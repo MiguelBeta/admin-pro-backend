@@ -18,5 +18,5 @@ const googleVerify = async( token ) => {
 }
 
 module.exports = {
-    googleVerify
+  googleVerify
 }

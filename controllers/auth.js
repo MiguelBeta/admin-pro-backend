@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const Usuario = require('../models/usuarios');
 const { generateJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
+const { JWT } = require('google-auth-library');
 
 
 
@@ -57,6 +58,7 @@ const googleSignIn = async (req, res = response) => {
   const googleToken = req.body.token;
 
   try {
+
     const { email, name, picture } = await googleVerify( googleToken );
 
     const usuarioDB = await Usuario.findOne({ email });
@@ -69,7 +71,7 @@ const googleSignIn = async (req, res = response) => {
         password: '@@@',
         img: picture,
         google: true
-      })
+      });
     } else {
       usuario = usuarioDB;
       usuario.google = true;
@@ -85,7 +87,6 @@ const googleSignIn = async (req, res = response) => {
 
     res.json({
       ok: true,
-      // email, name, picture,
       token
     });
 
