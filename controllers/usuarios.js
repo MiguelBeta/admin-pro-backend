@@ -99,7 +99,7 @@ const actualizarUsuarios = async (req, res = response) => {
 
   try {
 
-    const usuarioDB = await Usuario.findById(uid);
+    const usuarioDB = await Usuario.findById( uid );
 
     if (!usuarioDB) {
       return res.status(404).json({
@@ -111,19 +111,20 @@ const actualizarUsuarios = async (req, res = response) => {
     // Actualizaciones elimina estos campos que no puede actualizar en la petición
     const { password, google, email, ...campos } = req.body;
 
-    if (usuarioDB.email !== email) {
+    if ( usuarioDB.email !== email ) {
+
       const existeEmail = await Usuario.findOne({ email });
       if (existeEmail) {
-        return res.status(400).json({
-          ok: false,
-          msg: 'Ya existe un usuario con ese email'
-        });
+          return res.status(400).json({
+            ok: false,
+            msg: 'Ya existe un usuario con ese email'
+          });
       }
     }
 
     campos.email = email;
     // Actualiza por uid y se envian los campos que puede actualizar
-    const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
+    const usuarioActualizado = await Usuario.findByIdAndUpdate( uid, campos, { new: true });
 
 
     res.json({
@@ -133,11 +134,11 @@ const actualizarUsuarios = async (req, res = response) => {
 
 
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      ok: false,
-      msg: 'Error inesperado'
-    })
+      console.log( error );
+      res.status(500).json({
+        ok: false,
+        msg: 'Error inesperado'
+      })
   }
 
 }
