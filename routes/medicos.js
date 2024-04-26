@@ -10,13 +10,14 @@ const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validator-campos');
 
 const { validarJWT } = require('../middlewares/validar-jwt');
-const  { getMedico, crearMedico, actualizarMedico, borrarMedico } = require('../controllers/medicos');
+
+const  { getMedico, crearMedico, actualizarMedico, borrarMedico, getMedicoById } = require('../controllers/medicos');
 
 
 const router = Router();
 
 // Lee la info del usuario
-router.get( '/', getMedico );
+router.get( '/', validarJWT, getMedico );
 
 // Crear un usuario y recibe los datos obligatorios
 router.post('/',
@@ -42,8 +43,17 @@ router.put('/:id',
 
 // Eliminar usuario
 router.delete('/:id',
+    validarJWT,
     borrarMedico
+);
+
+router.get('/:id',
+    validarJWT,
+    // borrarMedico,
+    getMedicoById
   );
+
+
 
 
 module.exports = router;

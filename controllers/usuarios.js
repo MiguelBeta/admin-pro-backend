@@ -5,28 +5,18 @@ const Usuario = require('../models/usuarios');
 const { generateJWT } = require('../helpers/jwt');
 
 
-const getUsuarios = async (req, res) => {
+const getUsuarios = async(req, res) => {
 
   const desde = Number(req.query.desde) || 0;
 
-  // Llama la informacion de todos los usuarios
-  // const usuarios = await Usuario
-  //   .find({}, 'nombre email role google')
-  //   .skip(desde)
-  //   .limit(5);
-
-  // // Total de usuarios
-  // const total = await Usuario.countDocuments();
-
-  // Para qu usuarios y total trabajen en simultaneo
+  // Para que usuarios y total trabajen en simultaneo
   const [ usuarios, total ] = await Promise.all([
       Usuario
           .find({}, 'nombre email role google img')
-          .skip(desde)
-          .limit(5),
+          .skip( desde )
+          .limit( 5 ),
 
       Usuario.countDocuments()
-
   ]);
 
 
