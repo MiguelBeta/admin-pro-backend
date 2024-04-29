@@ -6,6 +6,7 @@ const Usuario = require('../models/usuarios');
 const { generateJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
 const { JWT } = require('google-auth-library');
+const { getMenuFronEnd } = require('../helpers/menu-frontend');
 
 
 
@@ -41,8 +42,9 @@ const login = async (req, res = response) => {
 
     res.json({
       ok: true,
-      token
-    })
+      token,
+      menu: getMenuFronEnd( usurioDB.role )
+    });
 
   } catch (error) {
     console.log(error);
@@ -87,7 +89,8 @@ const googleSignIn = async (req, res = response) => {
 
     res.json({
       ok: true,
-      token
+      token,
+      menu: getMenuFronEnd( usuario.role )
     });
 
   } catch (error) {
@@ -115,7 +118,8 @@ const renewToken = async ( req, res = response ) => {
   res.json({
     ok: true,
     token,
-    usuario
+    usuario,
+    menu: getMenuFronEnd( usuario.role )
   });
 
 }
