@@ -37,18 +37,20 @@ const validarJWT = (req, res, next) => {
 
 }
 
-const validarADMIN_ROLE = async (req, res, next) => {
+ const validarADMIN_ROLE_oMismoUsuario = async (req, res, next) => {
+
+  // Extraigo el uid del usuario
+  const uid = req.uid;
+  const id  = req.params.id;
 
   try {
 
-    // Extraigo el uid del usuario
-    const uid = req.uid;
 
     //extraemos el usuario
     const usuarioDB = await Usuario.findById(uid);
 
     // Me aseguro de que el usuario exista
-    if (!usuarioDB) {
+    if ( !usuarioDB ) {
       return res.status(404).json({
         ok: false,
         msg: 'Usuario no existe'
@@ -57,7 +59,54 @@ const validarADMIN_ROLE = async (req, res, next) => {
 
 
     // Si es un usuario diferente de admin
-    if (usuarioDB.role !== 'ADMIN_ROLE') {
+    if ( usuarioDB.role === 'ADMIN_ROLE' || uid === id ) {
+
+      // Si es un admin o pasa las validaciones permite hacer los cambios y llama la funcion next
+      next();
+
+    } else {
+      return res.status(403).json({
+        ok: false,
+        msg: 'No tiene privilegios para hacer eso'
+      });
+    }
+
+
+
+
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Hable con el administrador'
+    })
+  }
+
+ }
+
+const validarADMIN_ROLE = async (req, res, next) => {
+
+  // Extraigo el uid del usuario
+  const uid = req.uid;
+
+  try {
+
+
+    //extraemos el usuario
+    const usuarioDB = await Usuario.findById(uid);
+
+    // Me aseguro de que el usuario exista
+    if ( !usuarioDB ) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Usuario no existe'
+      });
+    }
+
+
+    // Si es un usuario diferente de admin
+    if ( usuarioDB.role !== 'ADMIN_ROLE' ) {
       return res.status(403).json({
         ok: false,
         msg: 'No tiene privilegios para hacer eso'
@@ -84,5 +133,6 @@ const validarADMIN_ROLE = async (req, res, next) => {
 
 module.exports = {
   validarJWT,
-  validarADMIN_ROLE
+  validarADMIN_ROLE,
+  validarADMIN_ROLE_oMismoUsuario
 }
