@@ -9,8 +9,8 @@
     "start": "node index.js"
   },
   "engines": {
-    "node": "21.6.1",
-    "npm": ">=6.9.0"
+    "node": "21.6.1"
+
   },
   "keywords": [],
   "author": "",
