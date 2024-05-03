@@ -4,8 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "heroku-postbuild": "npm install",
     "start:dev": "nodemon index.js",
     "start": "node index.js"
+  },
+  "engines": {
+    "node": "16.4.5",
+    "npm": ">=6.9.0"
   },
   "keywords": [],
   "author": "",
